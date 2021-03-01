@@ -2,7 +2,7 @@ import React,{Component} from 'react';
 import './App.css';
 import Amplify, {Analytics, AWSKinesisFirehoseProvider } from 'aws-amplify';
 import config from './aws-exports'
-
+import DynamoDB from 'aws-sdk'
 
 
 Amplify.configure({
@@ -17,6 +17,7 @@ Amplify.configure({
   }
 });
 
+var ddb = new DynamoDB.DocumentClient();
 
 
 function record(language, event) {
