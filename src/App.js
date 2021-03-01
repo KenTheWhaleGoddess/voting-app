@@ -3,8 +3,6 @@ import './App.css';
 import Amplify, {Analytics, AWSKinesisFirehoseProvider } from 'aws-amplify';
 import config from './aws-exports'
 
-import DynamoDB from 'aws-sdk'
-
 
 
 Amplify.configure({
@@ -18,8 +16,6 @@ Amplify.configure({
     }
   }
 });
-
-const ddb = new DynamoDB.DocumentClient();
 
 
 
@@ -71,19 +67,9 @@ class App extends Component{
 			array[j] = temp;
 		}
 		this.setState({languages: newLanguages});
-    
-    const now = new Date();
+   
 
-    let data = {
-      id: now.getTime(),
-      language: newLanguages[i].name
-    }
-
-    Analytics.record({
-      data: data,
-      streamName: config.aws_firehose_name
-    }, 'AWSKinesisFirehose');
-	}
+    record(newLanguages[i].name, newLanguages[i].votes)
 
 	render(){
 		return(
@@ -99,7 +85,7 @@ class App extends Component{
 								<div className="languageName">
 									{lang.name}
 								</div>
-								<button onClick={record(lang.name, i)}>Click Here</button>
+								<button onClick={this.vote.bind(this, i)}>Click Here</button>
 							</div>
 						)
 					}
