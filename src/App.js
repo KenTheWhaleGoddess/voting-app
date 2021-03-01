@@ -3,6 +3,10 @@ import './App.css';
 import Amplify, {Analytics, AWSKinesisFirehoseProvider } from 'aws-amplify';
 import config from './aws-exports'
 
+import DynamoDB from 'aws-sdk'
+
+
+
 Amplify.configure({
   Auth: {
     identityPoolId: config.aws_cognito_identity_pool_id,
@@ -15,6 +19,35 @@ Amplify.configure({
   }
 });
 
+const ddb = new DynamoDB.DocumentClient();
+
+
+
+function record(language, event) {
+    return ddb.put({
+        TableName: 'cakebops-kinesis-table',
+        Item: {
+            language: language,
+            val: event,
+            RequestTime: new Date().toISOString(),
+        },
+    }).promise();
+}
+
+
+
+function get(language) {
+	 var params = {
+		  Key: {
+		   "language": {
+		     S: language
+		    }
+		  }, 
+		  TableName: "cakebops-kinesis-table"
+		 };
+    return ddb.getItem(params).val;
+}
+
 Analytics.addPluggable(new AWSKinesisFirehoseProvider());
 
 class App extends Component{
@@ -22,10 +55,9 @@ class App extends Component{
 		super(props);
 		this.state = {
 			languages : [
-				{name: "Php", votes: 0},
-				{name: "Python", votes: 0},
-				{name: "Go", votes: 0},
-				{name: "Java", votes: 0}
+				{name: "Mila", votes: get("Mila")},
+				{name: "Ken", votes: get("Ken")},
+				{name: "Peppa", votes: get("Peppa")},
 			]
 		}
 	}
@@ -67,7 +99,7 @@ class App extends Component{
 								<div className="languageName">
 									{lang.name}
 								</div>
-								<button onClick={this.vote.bind(this, i)}>Click Here</button>
+								<button onClick={record(lang.name, i)}>Click Here</button>
 							</div>
 						)
 					}
