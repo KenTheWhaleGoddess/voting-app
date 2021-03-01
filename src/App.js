@@ -69,8 +69,8 @@ class App extends Component{
 		this.setState({languages: newLanguages});
    
 
-    record(newLanguages[i].name, newLanguages[i].votes);
-
+    	record(newLanguages[i].name, newLanguages[i].votes);
+	}
 	render(){
 		return(
 			<>
